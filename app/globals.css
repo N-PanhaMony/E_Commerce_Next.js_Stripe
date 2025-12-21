@@ -218,35 +218,129 @@ footer .link-container > div {
 .social-links i {
     font-size: 2rem;
 }
+.page-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 8rem 0;
+}
+/* portal overlay */
+.portal-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1001;
+}
+.portal-underlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.7;
+    background: #030615;
+    border: none;
+    margin: none;
+}
+.portal-content{
+    position: absolute;
+    pointer-events: none;
+    z-index: 1005;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    max-width: 80vw;
+    max-height: 80vh ;
+    display: grid;
+    place-items: center;
+}
+.img-button {
+    height: fit-content;
+    width: fit-content;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    cursor: zoom-in;
+    border-radius: none;
+}
 /* break poinsts */
 @media (min-width : 640px)  {
     .header-content {
-        grid-template-columns: repeat(3, minmax(0,1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+
     .mid-text {
         display: block;
         margin: 0 auto;
     }
+
     .header-content i {
         font-size: 1.8rem;
     }
+
+    .cta-btns-container h1 {
+        font-size: 3rem;
+    }
+
+    .cta-btns-container>div div:last-of-type {
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    .cta-btns-container button {
+        font-size: 1.4rem;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .section-header {
+        margin: 4rem auto 3rem auto;
+    }
+
+    .sticker-container {
+        gap: 1rem 2rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cart-item {
+        gap: 2rem;
+    }
 }
 
-@media (min-width : 768px)  {
-    footer{
-        grid-template-columns: repeat(2, minmax(0,1fr));
+@media (min-width: 768px) {
+    .sticker-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+
+
+    footer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
+    }
+
     .email-container {
-        padding-right: 2rem;
+        padding-right: 4rem;
     }
+
     .socials {
-        grid-column: 1 / -1;
+        grid-column: span 2 / span 2;
     }
 }
 
-@media (min-width : 1024px)  {
-    footer .link-container {
-        grid-template-columns: repeat(3,minmax(0,1fr));
+
+@media (min-width: 1024px) {
+    .planner-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4rem;
+    }
+
+    .sticker-container {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    footer .links-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 

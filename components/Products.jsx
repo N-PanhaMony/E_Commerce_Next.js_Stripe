@@ -1,10 +1,16 @@
 'use client'
 
+import { useState } from "react"
+import Portal from "./Portal"
+
 export default function Products(){
+
+    const [portalImage , setPortalImage] = useState(null)
+
 
     const Description = {
         docker: "A beautiful Angkor Wat temple sticker to decorate your belongings.",
-        Bayon_Sticker: "Sticker featuring Bayon's iconic smiling faces.",
+        Firebase: "Sticker featuring Bayon's iconic smiling faces.",
         Ta_Prohm_Sticker: "Ta Prohm temple sticker with its famous tree-covered ruins.",
         Banteay_Srei_Sticker: "Intricate carvings of Banteay Srei in sticker form.",
         Preah_Koan_Sticker: "Classic Khmer temple architecture sticker for collectors.",
@@ -13,6 +19,14 @@ export default function Products(){
     const ArrDes = Object.keys(Description)
     return(
         <>
+            {portalImage && (
+                <Portal handleClonePortal ={()=>{ setPortalImage(null)}} >
+                    <div className="portal-content">
+                        <img className="img-display" src={`high_res/${portalImage}.jpeg`} alt={`${portalImage}-high-res`}/>
+                    </div>
+                </Portal>
+            )}
+
             {/* Paintings Section */}
             <div className="section-container">
                 <div className="section-header">
@@ -22,14 +36,16 @@ export default function Products(){
 
                 <div className="planner-content">
                     <div>
-                        <button className="img-button">
-                            <img src="low_res/angkor_wat_painting.jpeg" alt="Angkor Wat painting"/>
+                        <button  onClick={() =>{
+                            setPortalImage('AngkorWat')
+                        }} className="img-button">
+                            <img src="low_res/AngkorWat.jpeg" alt="Angkor Wat painting"/>
                         </button>
                     </div>
                     <div className="planner-info">
-                        <p className="text-large planner-header">Angkor Wat at Sunset</p>
+                        <p className="text-large planner-header">Angkor Wat</p>
                         <h3><span>$</span>29.99</h3>
-                        <p>Beautiful painting capturing the iconic Angkor Wat temple at sunset.</p>
+                        <p>Angkor Wat reflected in calm waters</p>
                         <ul>
                             <li>Size: A3</li>
                             <li>Material: Canvas Print</li>
@@ -51,7 +67,9 @@ export default function Products(){
                     {ArrDes.map((s,sIndex) => {
                         return(
                             <div key={sIndex} className="s-card">
-                                <button className="img-button">
+                                <button onClick={() =>{
+                                    setPortalImage(s)
+                                }} className="img-button">
                                     <img src={`low_res/${s}.jpeg`} alt={`${s}-low-res`}/>
                                 </button>
                                 <div className="s-info">
