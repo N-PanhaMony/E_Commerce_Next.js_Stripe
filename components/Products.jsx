@@ -9,12 +9,18 @@ export default function Products(){
 
 
     const Description = {
-        docker: "A beautiful Angkor Wat temple sticker to decorate your belongings.",
-        Firebase: "Sticker featuring Bayon's iconic smiling faces.",
-        Ta_Prohm_Sticker: "Ta Prohm temple sticker with its famous tree-covered ruins.",
-        Banteay_Srei_Sticker: "Intricate carvings of Banteay Srei in sticker form.",
-        Preah_Koan_Sticker: "Classic Khmer temple architecture sticker for collectors.",
-    }
+        Angkor_Wat_Sticker: "A beautiful Angkor Wat temple sticker to decorate your belongings.",
+        Bayon_Sticker: "Sticker featuring Bayon's iconic stone smiling faces.",
+        Ta_Prohm_Sticker: "Ta Prohm sticker showing tree roots embracing ancient ruins.",
+        Banteay_Srei_Sticker: "Intricate pink sandstone carvings of Banteay Srei in sticker form.",
+        Preah_Koan_Sticker: "Sticker inspired by classic Khmer temple architecture at Preah Ko.",
+        Preah_Vihear_Sticker: "High-cliff temple sticker inspired by Preah Vihear mountain site.",
+        Bakong_Sticker: "Bakong pyramid temple sticker with layered steps and sandstone towers.",
+        Phnom_Bakheng_Sticker: "Sunset temple sticker featuring Phnom Bakheng’s elevated ruins.",
+        Beng_Melea_Sticker: "Wilderness temple sticker showing collapsed stone corridors of Beng Melea.",
+        Koh_Ker_Sticker: "Sticker of Koh Ker’s stepped pyramid rising above the forest."
+     }
+
 
     const ArrDes = Object.keys(Description)
     return(
