@@ -14,11 +14,11 @@ export default function Products(){
         Ta_Prohm_Sticker: "Ta Prohm sticker showing tree roots embracing ancient ruins.",
         Banteay_Srei_Sticker: "Intricate pink sandstone carvings of Banteay Srei in sticker form.",
         Preah_Koan_Sticker: "Sticker inspired by classic Khmer temple architecture at Preah Ko.",
-        Preah_Vihear_Sticker: "High-cliff temple sticker inspired by Preah Vihear mountain site.",
-        Bakong_Sticker: "Bakong pyramid temple sticker with layered steps and sandstone towers.",
-        Phnom_Bakheng_Sticker: "Sunset temple sticker featuring Phnom Bakheng’s elevated ruins.",
-        Beng_Melea_Sticker: "Wilderness temple sticker showing collapsed stone corridors of Beng Melea.",
-        Koh_Ker_Sticker: "Sticker of Koh Ker’s stepped pyramid rising above the forest."
+        // Preah_Vihear_Sticker: "High-cliff temple sticker inspired by Preah Vihear mountain site.",
+        // Bakong_Sticker: "Bakong pyramid temple sticker with layered steps and sandstone towers.",
+        // Phnom_Bakheng_Sticker: "Sunset temple sticker featuring Phnom Bakheng’s elevated ruins.",
+        // Beng_Melea_Sticker: "Wilderness temple sticker showing collapsed stone corridors of Beng Melea.",
+        // Koh_Ker_Sticker: "Sticker of Koh Ker’s stepped pyramid rising above the forest."
      }
 
 

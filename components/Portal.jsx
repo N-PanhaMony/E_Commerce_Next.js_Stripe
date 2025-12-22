@@ -10,4 +10,4 @@ export default function Portal(props){
         </div>,
         document.getElementById('portal')
     )
-}
+}  
