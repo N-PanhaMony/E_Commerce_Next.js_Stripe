@@ -3,93 +3,89 @@
 import { useState } from "react"
 import Portal from "./Portal"
 
-export default function Products(){
+export default function Products(props) {
 
-    const [portalImage , setPortalImage] = useState(null)
+  const { painting, stickers } = props
+  const [portalImage, setPortalImage] = useState(null)
 
+  if (!stickers.length || !painting) return null
 
-    const Description = {
-        Angkor_Wat_Sticker: "A beautiful Angkor Wat temple sticker to decorate your belongings.",
-        Bayon_Sticker: "Sticker featuring Bayon's iconic stone smiling faces.",
-        Ta_Prohm_Sticker: "Ta Prohm sticker showing tree roots embracing ancient ruins.",
-        Banteay_Srei_Sticker: "Intricate pink sandstone carvings of Banteay Srei in sticker form.",
-        Preah_Koan_Sticker: "Sticker inspired by classic Khmer temple architecture at Preah Ko.",
-        // Preah_Vihear_Sticker: "High-cliff temple sticker inspired by Preah Vihear mountain site.",
-        // Bakong_Sticker: "Bakong pyramid temple sticker with layered steps and sandstone towers.",
-        // Phnom_Bakheng_Sticker: "Sunset temple sticker featuring Phnom Bakheng’s elevated ruins.",
-        // Beng_Melea_Sticker: "Wilderness temple sticker showing collapsed stone corridors of Beng Melea.",
-        // Koh_Ker_Sticker: "Sticker of Koh Ker’s stepped pyramid rising above the forest."
-     }
+  return (
+    <>
+      {portalImage && (
+        <Portal handleClonePortal={() => setPortalImage(null)}>
+          <div className="portal-content">
+            <img
+              className="img-display"
+              src={`high_res/${portalImage}.jpeg`}
+              alt={`${portalImage}-high-res`}
+            />
+          </div>
+        </Portal>
+      )}
 
+      {/* Paintings Section (Static Frontend) */}
+      <div className="section-container">
+        <div className="section-header">
+          <h2>Shop Our Paintings</h2>
+          <p>Khmer temple inspired artworks</p>
+        </div>
 
-    const ArrDes = Object.keys(Description)
-    return(
-        <>
-            {portalImage && (
-                <Portal handleClonePortal ={()=>{ setPortalImage(null)}} >
-                    <div className="portal-content">
-                        <img className="img-display" src={`high_res/${portalImage}.jpeg`} alt={`${portalImage}-high-res`}/>
+        <div className="painting-content">
+          <div>
+            <button onClick={() => setPortalImage('AngkorWat')} className="img-button">
+              <img src="low_res/AngkorWat.jpeg" alt="Angkor Wat painting"/>
+            </button>
+          </div>
+
+          <div className="painting-info">
+            <p className="text-large painting-header">Angkor Wat</p>
+            <h3><span>$</span>29.99</h3>
+            <p>Angkor Wat reflected in calm waters</p>
+            <ul>
+              <li>Size: A3</li>
+              <li>Material: Canvas Print</li>
+            </ul>
+          </div>
+
+          <div className="purchase-btns">
+            <button>Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stickers Section (From Stripe) */}
+      <div className="sticker-container">
+            {stickers.map((sticker, sIndex) => {
+                const stickerKey = sticker.name.replaceAll(' ', '_');
+
+                return (
+                <div key={sIndex} className="s-card">
+                    <button
+                    onClick={() => setPortalImage(stickerKey)}
+                    className="img-button"
+                    >
+                    <img
+                        src={`/low_res/${stickerKey}.jpeg`}
+                        alt={`${stickerKey}-low-res`}
+                    />
+                    </button>
+
+                    <div className="s-info">
+                    <p className="text-medium">{sticker.name}</p>
+                    <p>{sticker.description}</p>
+                    <h4>
+                        <span>$</span>
+                        {sticker.prices?.[0]?.unit_amount
+                        ? (sticker.prices[0].unit_amount / 100).toFixed(2)
+                        : '—'}
+                    </h4>
+                    <button>Add to Cart</button>
                     </div>
-                </Portal>
-            )}
-
-            {/* Paintings Section */}
-            <div className="section-container">
-                <div className="section-header">
-                    <h2>Shop Our Paintings</h2>
-                    <p>Khmer temple inspired artworks</p>
                 </div>
-
-                <div className="painting-content">
-                    <div>
-                        <button  onClick={() =>{
-                            setPortalImage('AngkorWat')
-                        }} className="img-button">
-                            <img src="low_res/AngkorWat.jpeg" alt="Angkor Wat painting"/>
-                        </button>
-                    </div>
-                    <div className="painting-info">
-                        <p className="text-large painting-header">Angkor Wat</p>
-                        <h3><span>$</span>29.99</h3>
-                        <p>Angkor Wat reflected in calm waters</p>
-                        <ul>
-                            <li>Size: A3</li>
-                            <li>Material: Canvas Print</li>
-                        </ul>
-                    </div>
-                    <div className="purchase-btns">
-                        <button>Add to Cart</button>
-                    </div>
-                </div>
+                )
+            })}
             </div>
-
-            {/* Stickers Section */}
-            <div className="section-container">
-                <div className="section-header">
-                    <h2>Collect Your Favorite Stickers</h2>
-                    <p>Khmer temple themed designs</p>
-                </div>
-                <div className="sticker-container">
-                    {ArrDes.map((s,sIndex) => {
-                        return(
-                            <div key={sIndex} className="s-card">
-                                <button onClick={() =>{
-                                    setPortalImage(s)
-                                }} className="img-button">
-                                    <img src={`low_res/${s}.jpeg`} alt={`${s}-low-res`}/>
-                                </button>
-                                <div className="s-info">
-                                    <p className="text-medium">{s.replaceAll('_',' ')} <sticker className="png"></sticker> </p>
-                                    <p>{Description[s]}</p>
-                                    <h4><span>$</span>4.99</h4>
-                                    <button>Add to Cart</button>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-
-        </>
-    )
+    </>
+  )
 }
