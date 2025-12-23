@@ -1,39 +1,39 @@
 import Stripe from "stripe";
-import '../../../envConfig'
+import '../../../envConfig' // Load environment variables
 
 const API_KEY = process.env.STRIPE_SECRET_KEY
 const stripe = new Stripe(API_KEY)
 
 export async function GET() {
     try {
-        // fetch data all the active product from stripe
-        const products = await stripe.products.list({active:true})
+        // 1. Fetch all active products from Stripe
+        const products = await stripe.products.list({ active: true })
 
-        // fetch all the prices that are active
-        const prices = await stripe.prices.list({active :true})
+        // 2. Fetch all active prices from Stripe
+        const prices = await stripe.prices.list({ active: true })
 
-        //conbine the products and their prices
-        const combinedData = products.data.map((product) =>{
-            const productPrices = prices.data.filter((price)=>{
-                return price.product === product.id
-            })
+        // 3. Combine each product with its corresponding prices
+        const combinedData = products.data.map((product) => {
+            // Filter prices for this product
+            const productPrices = prices.data.filter((price) => price.product === product.id)
+
+            // Return the product object with its prices array
             return {
-                ...products ,
-                prices : productPrices.map((price) =>{
-                    return {
-                        id : price.id,
-                        unit_amount : price.unit_amount,
-                        currency : price.currency,
-                        recurring : price.recurring
-                    }
-                })
+                ...product,
+                prices: productPrices.map((price) => ({
+                    id: price.id,
+                    unit_amount: price.unit_amount,
+                    currency: price.currency,
+                    recurring: price.recurring
+                }))
             }
         })
 
-        //send the cobined data as json
+        // 4. Return combined data as JSON
         return Response.json(combinedData)
+
     } catch (err) {
-        console.log('Error fetching data from stripe',err.message)
-        return Response.json({error: 'failed to fetch data from stripe'})
+        console.log('Error fetching data from Stripe:', err.message)
+        return Response.json({ error: 'Failed to fetch data from Stripe' })
     }
 }
