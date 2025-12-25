@@ -71,7 +71,7 @@ export default function Products(props) {
                         <div className="purchase-btns">
                             <button onClick={()=>{
                                 const paintingPriceId = painting.default_price
-                                handleChangeProduct(paintingPriceId,1)
+                                handleChangeProduct(paintingPriceId,1 , painting)
                             }}>Add to Cart</button>
                         </div>
                     </div>
@@ -102,8 +102,8 @@ export default function Products(props) {
                                     {/* Convert price from cents to dollars */}
                                     <h4><span>$</span>{sticker.prices[0].unit_amount / 100}</h4>
                                     <button onClick={()=>{
-                                        const stickersPriceId = stickers.default_price
-                                        handleChangeProduct(stickersPriceId,1)
+                                        const stickersPriceId = stickers.default_price || sticker.prices[0].id 
+                                        handleChangeProduct(stickersPriceId,1 , sticker)
                                     }}>Add to Cart</button>
                                 </div>
                             </div>
