@@ -3,7 +3,10 @@ import Products from "@/components/Products";
 
 // Function to fetch all products from the API route
 export async function getProducts() {
-  const response = await fetch('http://localhost:3000/api/products')
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL
+  console.log(baseURL);
+  
+  const response = await fetch(baseURL +'/api/products')
   const products = await response.json()
   return products
 }

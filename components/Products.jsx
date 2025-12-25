@@ -11,7 +11,7 @@ export default function Products(props) {
     const [portalImage, setPortalImage] = useState(null) // For showing high-res image in portal
 
 
-    const {cart} = useProducts()
+    const {handleChangeProduct,cart} = useProducts()
     console.log(cart);
     // Do not render if stickers or painting are missing
     if (!stickers.length || !painting) return null
@@ -69,7 +69,10 @@ export default function Products(props) {
 
                         {/* Optional purchase buttons or CTA */}
                         <div className="purchase-btns">
-                            <button>Add to Cart</button>
+                            <button onClick={()=>{
+                                const paintingPriceId = painting.default_price
+                                handleChangeProduct(paintingPriceId,1)
+                            }}>Add to Cart</button>
                         </div>
                     </div>
 
@@ -98,7 +101,10 @@ export default function Products(props) {
                                     <p>{sticker.description}</p>
                                     {/* Convert price from cents to dollars */}
                                     <h4><span>$</span>{sticker.prices[0].unit_amount / 100}</h4>
-                                    <button>Add to Cart</button>
+                                    <button onClick={()=>{
+                                        const stickersPriceId = stickers.default_price
+                                        handleChangeProduct(stickersPriceId,1)
+                                    }}>Add to Cart</button>
                                 </div>
                             </div>
                         )
