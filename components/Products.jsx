@@ -32,7 +32,7 @@ export default function Products(props) {
             )}
 
             {/* Paintings Section (STATIC) */}
-            <div className="section-container">
+            <div id="painting-section" className="section-container">
                 <div className="section-header">
                     <h2>Shop Our Paintings</h2>
                     <p>Khmer temple inspired artworks</p>
@@ -80,7 +80,7 @@ export default function Products(props) {
             </div>
 
             {/* Stickers Section (DYNAMIC) */}
-            <div className="section-container">
+            <div id="sticker-section" className="section-container">
                 <div className="section-header">
                     <h2>Collect Your Favorite Stickers</h2>
                     <p>Khmer temple themed designs</p>

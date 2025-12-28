@@ -2,49 +2,49 @@
 
 import { createContext, useContext, useState } from "react"
 
-const ProductContext = createContext()
+const ProductContext = createContext() // create shared global storage
 
 export default function ProductsProvider(props){
 
     const {children} = props
 
-    const [ cart , setCart ] = useState({})
+    const [ cart , setCart ] = useState({}) // store cart items
 
-    function handleChangeProduct(price_id , num , data){
+    function handleChangeProduct(price_id , num , data , noIncrement = false){
         const newCart = {
             ...cart
         }
         if (price_id in cart){
-            // newCart[price_id]= newCart[price_id] + num
+            // update existing product quantity
             newCart[price_id]= {
                 ...data,
-                quantity : newCart[price_id]?.quantity + num
+                quantity : noIncrement? num : newCart[price_id]?.quantity + num
             }
-        }else {
+        } else {
+            // add new product
              newCart[price_id]= {
                 ...data,
                 quantity : num
             }
         }
 
-        if (newCart[price_id].quantity === 0){
-            delete newCart[price_id]
+        if (parseFloat(newCart[price_id].quantity) <= 0){
+            delete newCart[price_id] // remove if quantity <= 0
         }
 
-        setCart(newCart)
+        setCart(newCart) // update state
     }
 
-
     const value = {
-        cart,
-        handleChangeProduct
+        cart, // global cart object
+        handleChangeProduct // function to modify cart
     }
 
     return(
         <ProductContext.Provider value={value}>
-            {children}
+            {children} {/* make cart accessible to all children */}
         </ProductContext.Provider>
     )
 }
 
-export const useProducts = () => useContext(ProductContext)
+export const useProducts = () => useContext(ProductContext) // custom hook to access context
