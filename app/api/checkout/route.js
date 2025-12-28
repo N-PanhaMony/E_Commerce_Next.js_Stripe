@@ -1,10 +1,10 @@
 import Stripe from "stripe";
 import '../../../envConfig' // Load environment variables
 
-const API_KEY = process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY
-const stripe = new Stripe(API_KEY,{
-    apiVersion: '2023-08-16'
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2023-08-16'
 })
+
 
 export async function POST(request) {
     try {
