@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useProducts } from "@/context/ProductContext";
 import Link from "next/link";
@@ -15,7 +15,7 @@ export default function CartPage() {
         quantity: cart[item].quantity
       }));
 
-      const response = await fetch('/api/checkout', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ totalItems })
@@ -24,7 +24,7 @@ export default function CartPage() {
       const data = await response.json();
       if (response.ok) router.push(data.url);
     } catch (error) {
-      console.error('Error creating checkout:', error.message);
+      console.log('Checkout error:', error.message);
     }
   }
 
@@ -32,7 +32,7 @@ export default function CartPage() {
     return (
       <section className="cart-section">
         <h2>Your Cart is Empty 🛒</h2>
-        <p>Add some paintings or stickers to your cart first!</p>
+        <p>Add paintings or stickers first!</p>
       </section>
     );
   }
@@ -41,27 +41,26 @@ export default function CartPage() {
     <section className="cart-section">
       <h2>Your Cart</h2>
       <div className="cart-container">
-        {Object.keys(cart).map((item, index) => {
+        {Object.keys(cart).map((item, idx) => {
           const itemData = cart[item];
-          const imgName = itemData.name === 'Angkor Wat'
-            ? 'AngkorWat'
-            : itemData.name.replaceAll(' ', '_').replaceAll('.jpeg', '');
-          const imgURL = `/low_res/${imgName}.jpeg`;
+          const quantity = itemData.quantity;
+          const imgName = itemData.name.replaceAll(' ', '_').replaceAll('.jpeg', '');
+          const imgURL = `low_res/${imgName}.jpeg`;
 
           return (
-            <div key={index} className="cart-item">
-              <img src={imgURL} alt={`${imgName}--img`} />
+            <div key={idx} className="cart-item">
+              <img src={imgURL} alt={imgName} />
               <div className="cart-item-info">
                 <h3>{itemData.name}</h3>
                 <p>{itemData.description?.slice(0, 100) || ''}{itemData.description?.length > 100 && '...'}</p>
                 <h4>${itemData.prices[0].unit_amount / 100}</h4>
-                <div className="quantity-container">
+                <div>
                   <p><strong>Quantity</strong></p>
                   <input
                     type="number"
-                    value={itemData.quantity}
+                    value={quantity}
                     min={0}
-                    onChange={e => handleChangeProduct(item, parseInt(e.target.value), itemData, true)}
+                    onChange={(e) => handleChangeProduct(item, parseInt(e.target.value), itemData, true)}
                   />
                 </div>
               </div>

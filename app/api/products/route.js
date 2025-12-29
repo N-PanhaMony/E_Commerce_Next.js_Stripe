@@ -6,12 +6,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function GET() {
   try {
-    // Fetch all active products and prices from Stripe
     const products = await stripe.products.list({ active: true });
     const prices = await stripe.prices.list({ active: true });
 
-    // Combine products with prices
-    const combinedData = products.data.map((product) => {
+    const combinedData = products.data.map(product => {
       const productPrices = prices.data.filter(price => price.product === product.id);
       return {
         ...product,
@@ -25,8 +23,8 @@ export async function GET() {
     });
 
     return Response.json(combinedData);
-  } catch (err) {
-    console.error('Error fetching Stripe products:', err.message);
+  } catch (error) {
+    console.log('Error fetching Stripe products:', error.message);
     return Response.json({ error: 'Failed to fetch products' });
   }
 }

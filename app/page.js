@@ -1,9 +1,11 @@
 import ImageBanner from "@/components/ImageBanner";
 import Products from "@/components/Products";
 
-// Server-side fetch of products via API route
+// Function to fetch products from API internally
 async function getProducts() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`, {
+    cache: 'no-store' // SSR fetch always fresh
+  });
   const products = await response.json();
   return products;
 }
@@ -14,18 +16,17 @@ export default async function Home() {
   let painting = null;
   let stickers = [];
 
-  // Separate painting from stickers
   for (let prod of products) {
     if (prod.name === 'Angkor Wat') {
       painting = prod;
-    } else {
-      stickers.push(prod);
+      continue;
     }
+    stickers.push(prod);
   }
 
   return (
     <div>
-      <ImageBanner /> {/* Banner at the top */}
+      <ImageBanner />
       <section>
         <Products painting={painting} stickers={stickers} />
       </section>

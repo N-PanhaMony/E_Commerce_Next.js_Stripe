@@ -17,7 +17,7 @@ export async function POST(request) {
 
     return Response.json(session);
   } catch (error) {
-    console.error('Error creating Stripe checkout:', error.message);
+    console.log('Error creating Stripe checkout:', error.message);
     return Response.json({ error: 'Failed to create checkout' });
   }
 }
