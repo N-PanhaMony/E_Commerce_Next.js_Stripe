@@ -1,41 +1,32 @@
 import Stripe from "stripe";
-import '../../../envConfig' // Load environment variables
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2023-08-16'
-})
-
+});
 
 export async function GET() {
-    try {
-        // 1. Fetch all active products from Stripe
-        const products = await stripe.products.list({ active: true })
+  try {
+    // Fetch all active products and prices from Stripe
+    const products = await stripe.products.list({ active: true });
+    const prices = await stripe.prices.list({ active: true });
 
-        // 2. Fetch all active prices from Stripe
-        const prices = await stripe.prices.list({ active: true })
+    // Combine products with prices
+    const combinedData = products.data.map((product) => {
+      const productPrices = prices.data.filter(price => price.product === product.id);
+      return {
+        ...product,
+        prices: productPrices.map(price => ({
+          id: price.id,
+          unit_amount: price.unit_amount,
+          currency: price.currency,
+          recurring: price.recurring
+        }))
+      };
+    });
 
-        // 3. Combine each product with its corresponding prices
-        const combinedData = products.data.map((product) => {
-            // Filter prices for this product
-            const productPrices = prices.data.filter((price) => price.product === product.id)
-
-            // Return the product object with its prices array
-            return {
-                ...product,
-                prices: productPrices.map((price) => ({
-                    id: price.id,
-                    unit_amount: price.unit_amount,
-                    currency: price.currency,
-                    recurring: price.recurring
-                }))
-            }
-        })
-
-        // 4. Return combined data as JSON
-        return Response.json(combinedData)
-
-    } catch (err) {
-        console.log('Error fetching data from Stripe:', err.message)
-        return Response.json({ error: 'Failed to fetch data from Stripe' })
-    }
+    return Response.json(combinedData);
+  } catch (err) {
+    console.error('Error fetching Stripe products:', err.message);
+    return Response.json({ error: 'Failed to fetch products' });
+  }
 }
