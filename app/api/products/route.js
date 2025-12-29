@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-08-16'
+  apiVersion: "2023-08-16",
 });
 
 export async function GET() {
@@ -9,22 +9,28 @@ export async function GET() {
     const products = await stripe.products.list({ active: true });
     const prices = await stripe.prices.list({ active: true });
 
-    const combinedData = products.data.map(product => {
-      const productPrices = prices.data.filter(price => price.product === product.id);
+    const combinedData = products.data.map((product) => {
+      const productPrices = prices.data.filter((price) => price.product === product.id);
       return {
         ...product,
-        prices: productPrices.map(price => ({
+        prices: productPrices.map((price) => ({
           id: price.id,
           unit_amount: price.unit_amount,
           currency: price.currency,
-          recurring: price.recurring
-        }))
+          recurring: price.recurring,
+        })),
       };
     });
 
-    return Response.json(combinedData);
+    return new Response(JSON.stringify(combinedData), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.log('Error fetching Stripe products:', error.message);
-    return Response.json({ error: 'Failed to fetch products' });
+    console.error("Error fetching Stripe products:", error.message);
+    return new Response(JSON.stringify({ error: "Failed to fetch products" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

@@ -1,34 +1,63 @@
-'use client'
+"use client";
 
+import { useState } from "react";
 import { useProducts } from "@/context/ProductContext";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function CartPage() {
   const router = useRouter();
   const { cart, handleChangeProduct } = useProducts();
+  const [loading, setLoading] = useState(false);
+
+  const total = Object.keys(cart).reduce((acc, key) => {
+    const item = cart[key];
+    const priceAmount = item.default_price
+      ? item.prices.find(p => p.id === item.default_price)?.unit_amount || 0
+      : item.prices[0].unit_amount;
+    return acc + priceAmount * item.quantity;
+  }, 0);
 
   async function createCheckout() {
-    try {
-      const totalItems = Object.keys(cart).map(item => ({
-        price: item,
-        quantity: cart[item].quantity
-      }));
+    if (!Object.keys(cart).length) return alert("Cart is empty.");
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ totalItems })
+    try {
+      setLoading(true);
+      const baseURL = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+
+      const lineItems = Object.keys(cart).map(key => {
+        const item = cart[key];
+        const priceId = item.default_price || item.prices[0].id;
+        return { price: priceId, quantity: item.quantity };
       });
 
-      const data = await response.json();
-      if (response.ok) router.push(data.url);
-    } catch (error) {
-      console.log('Checkout error:', error.message);
+      console.log("Checkout items:", lineItems);
+
+      const res = await fetch(`${baseURL}/api/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ totalItems: lineItems }),
+      });
+
+      const data = await res.json();
+      console.log("Stripe session:", data);
+
+      if (!res.ok || !data.url) {
+        console.error("Checkout failed:", data);
+        alert("Checkout failed. See console.");
+        return;
+      }
+
+      window.location.href = data.url; // Redirect to Stripe checkout
+    } catch (err) {
+      console.error("Checkout error:", err);
+      alert("Checkout failed. See console.");
+    } finally {
+      setLoading(false);
     }
   }
 
-  if (Object.keys(cart).length === 0) {
+  if (!Object.keys(cart).length) {
     return (
       <section className="cart-section">
         <h2>Your Cart is Empty 🛒</h2>
@@ -40,27 +69,50 @@ export default function CartPage() {
   return (
     <section className="cart-section">
       <h2>Your Cart</h2>
+
       <div className="cart-container">
-        {Object.keys(cart).map((item, idx) => {
-          const itemData = cart[item];
-          const quantity = itemData.quantity;
-          const imgName = itemData.name.replaceAll(' ', '_').replaceAll('.jpeg', '');
-          const imgURL = `low_res/${imgName}.jpeg`;
+        {Object.keys(cart).map((key, idx) => {
+          const item = cart[key];
+          const isPainting = !!item.default_price;
+
+          const imgName =
+            item.name === "Angkor Wat"
+              ? "AngkorWat"
+              : item.name.replaceAll(" ", "_").replaceAll(".jpeg", "");
+          const imgURL = `/low_res/${imgName}.jpeg`;
+
+          const priceAmount = isPainting
+            ? item.prices.find(p => p.id === item.default_price)?.unit_amount || 0
+            : item.prices[0].unit_amount;
 
           return (
             <div key={idx} className="cart-item">
-              <img src={imgURL} alt={imgName} />
+              <img
+                src={imgURL}
+                alt={imgName}
+                onError={e => (e.currentTarget.src = "/low_res/default.jpeg")}
+              />
               <div className="cart-item-info">
-                <h3>{itemData.name}</h3>
-                <p>{itemData.description?.slice(0, 100) || ''}{itemData.description?.length > 100 && '...'}</p>
-                <h4>${itemData.prices[0].unit_amount / 100}</h4>
-                <div>
+                <h3>{item.name}</h3>
+                <p>
+                  {item.description?.slice(0, 100)}
+                  {item.description?.length > 100 && "..."}
+                </p>
+                <h4>${(priceAmount / 100).toFixed(2)}</h4>
+                <div className="quantity-container">
                   <p><strong>Quantity</strong></p>
                   <input
                     type="number"
-                    value={quantity}
                     min={0}
-                    onChange={(e) => handleChangeProduct(item, parseInt(e.target.value), itemData, true)}
+                    value={item.quantity}
+                    onChange={e =>
+                      handleChangeProduct(
+                        isPainting ? item.default_price : item.prices[0].id,
+                        parseInt(e.target.value),
+                        item,
+                        true
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -68,9 +120,12 @@ export default function CartPage() {
           );
         })}
       </div>
+
       <div className="checkout-container">
-        <Link href="/"><button>Continue</button></Link>
-        <button onClick={createCheckout}>Checkout</button>
+        <Link href="/"><button>&larr; Continue Shopping</button></Link>
+        <button onClick={createCheckout} disabled={loading}>
+          {loading ? "Redirecting..." : `Checkout → ($${(total / 100).toFixed(2)})`}
+        </button>
       </div>
     </section>
   );
