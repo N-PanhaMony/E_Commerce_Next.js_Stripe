@@ -1,23 +1,32 @@
 import ImageBanner from "@/components/ImageBanner";
 import Products from "@/components/Products";
+import Stripe from "stripe";
 
-// Fetch products from internal API safely (SSR-friendly)
-async function getProducts(baseURL) {
-  const res = await fetch(`${baseURL}/api/products`, {
-    cache: "no-store", // always fetch fresh on SSR
+// Create Stripe instance using secret key on server (SSR)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-08-16",
+});
+
+async function getProducts() {
+  const products = await stripe.products.list({ active: true });
+  const prices = await stripe.prices.list({ active: true });
+
+  return products.data.map((product) => {
+    const productPrices = prices.data.filter((price) => price.product === product.id);
+    return {
+      ...product,
+      prices: productPrices.map((price) => ({
+        id: price.id,
+        unit_amount: price.unit_amount,
+        currency: price.currency,
+        recurring: price.recurring,
+      })),
+    };
   });
-
-  if (!res.ok) throw new Error("Failed to fetch products");
-
-  return res.json();
 }
 
 export default async function Home() {
-  // Determine the base URL for SSR
-  const baseURL =
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-  const products = await getProducts(baseURL);
+  const products = await getProducts();
 
   let painting = null;
   let stickers = [];
