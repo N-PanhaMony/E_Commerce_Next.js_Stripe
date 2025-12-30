@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState } from "react";
 import { useProducts } from "@/context/ProductContext";
@@ -8,7 +8,7 @@ export default function CartPage() {
   const { cart, handleChangeProduct } = useProducts();
   const [loading, setLoading] = useState(false);
 
-  // Calculate total price in cents
+  // Calculate total
   const total = Object.keys(cart).reduce((acc, key) => {
     const item = cart[key];
     const priceAmount = item.default_price
@@ -23,7 +23,6 @@ export default function CartPage() {
 
     try {
       setLoading(true);
-      const baseURL = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
 
       // Build line_items for Stripe
       const lineItems = Object.keys(cart).map(key => {
@@ -34,18 +33,18 @@ export default function CartPage() {
 
       console.log("[Checkout] Line items:", lineItems);
 
-      const res = await fetch(`${baseURL}/api/checkout`, {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ totalItems: lineItems }),
       });
 
       const data = await res.json();
-      console.log("[Checkout] Response from API:", data);
+      console.log("[Checkout] Response:", data);
 
       if (!res.ok || !data.url) {
-        console.error("[Checkout] Failed response:", data);
-        alert("Checkout failed. See console.");
+        console.error("[Checkout] Failed:", data);
+        alert("Checkout failed. See console logs.");
         return;
       }
 
@@ -53,12 +52,13 @@ export default function CartPage() {
       window.location.href = data.url;
     } catch (err) {
       console.error("[Checkout] Error:", err);
-      alert("Checkout failed. See console.");
+      alert("Checkout failed. See console logs.");
     } finally {
       setLoading(false);
     }
   }
 
+  // Render empty cart
   if (!Object.keys(cart).length) {
     return (
       <section className="cart-section">
