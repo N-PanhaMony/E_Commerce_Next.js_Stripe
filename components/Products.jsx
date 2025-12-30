@@ -8,7 +8,6 @@ export default function Products({ painting, stickers }) {
   const [portalImage, setPortalImage] = useState(null);
   const { handleChangeProduct } = useProducts();
 
-  // If data not loaded yet, render nothing
   if (!painting || !stickers?.length) return null;
 
   return (

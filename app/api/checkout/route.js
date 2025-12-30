@@ -9,17 +9,24 @@ export async function POST(request) {
     const body = await request.json();
     const { totalItems } = body;
 
-    if (!totalItems || !Array.isArray(totalItems) || totalItems.length === 0) {
-      return new Response(JSON.stringify({ error: "No items provided" }), { status: 400 });
-    }
+    console.log("[Checkout] Request body:", { totalItems });
 
+    // Determine origin: deployed URL or fallback
+    const origin =
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      request.headers.get("origin") ||
+      "http://localhost:3000";
+
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
       line_items: totalItems,
-      success_url: process.env.STRIPE_SUCCESS_URL,
-      cancel_url: process.env.STRIPE_CANCEL_URL,
+      success_url: process.env.STRIPE_SUCCESS_URL || `${origin}/success`,
+      cancel_url: process.env.STRIPE_CANCEL_URL || `${origin}/`,
     });
+
+    console.log("[Checkout] Session created:", session.id);
 
     return new Response(JSON.stringify(session), {
       status: 200,
@@ -27,9 +34,12 @@ export async function POST(request) {
     });
   } catch (err) {
     console.error("Stripe checkout error:", err);
-    return new Response(JSON.stringify({ error: "Failed to create checkout" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: err.message || "Failed to create checkout" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }
