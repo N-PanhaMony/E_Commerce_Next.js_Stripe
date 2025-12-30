@@ -39,6 +39,10 @@ export async function POST(request) {
 
     console.log("[Checkout] Session created:", session.id, session.url);
 
+    console.log("[Checkout] Request body:", body);
+    console.log("[Checkout] Using origin:", origin);
+    console.log("[Checkout] STRIPE_SECRET_KEY loaded:", !!process.env.STRIPE_SECRET_KEY);
+
     return new Response(
       JSON.stringify({ url: session.url }),
       { status: 200, headers: { "Content-Type": "application/json" } }
