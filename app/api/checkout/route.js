@@ -6,16 +6,27 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export async function POST(request) {
   try {
+    // Parse request body
     const body = await request.json();
+    console.log("[Checkout] Request body:", JSON.stringify(body, null, 2));
+
     const { totalItems } = body;
 
-    console.log("[Checkout] Request body:", { totalItems });
+    if (!totalItems || !totalItems.length) {
+      console.error("[Checkout] Error: No items in cart");
+      return new Response(
+        JSON.stringify({ error: "Cart is empty" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
-    // Determine origin: deployed URL or fallback
+    // Determine origin URL
     const origin =
-      process.env.NEXT_PUBLIC_BASE_URL ||
+      process.env.STRIPE_SUCCESS_URL?.replace("/success", "") ||
       request.headers.get("origin") ||
       "http://localhost:3000";
+
+    console.log("[Checkout] Using origin:", origin);
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -26,20 +37,17 @@ export async function POST(request) {
       cancel_url: process.env.STRIPE_CANCEL_URL || `${origin}/`,
     });
 
-    console.log("[Checkout] Session created:", session.id);
+    console.log("[Checkout] Session created:", session.id, session.url);
 
-    return new Response(JSON.stringify(session), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
   } catch (err) {
-    console.error("Stripe checkout error:", err);
+    console.error("[Checkout] Stripe checkout error:", err);
     return new Response(
       JSON.stringify({ error: err.message || "Failed to create checkout" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

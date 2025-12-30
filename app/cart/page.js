@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useProducts } from "@/context/ProductContext";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function CartPage() {
-  const router = useRouter();
   const { cart, handleChangeProduct } = useProducts();
   const [loading, setLoading] = useState(false);
 
+  // Calculate total price in cents
   const total = Object.keys(cart).reduce((acc, key) => {
     const item = cart[key];
     const priceAmount = item.default_price
@@ -18,6 +17,7 @@ export default function CartPage() {
     return acc + priceAmount * item.quantity;
   }, 0);
 
+  // Checkout function
   async function createCheckout() {
     if (!Object.keys(cart).length) return alert("Cart is empty.");
 
@@ -25,13 +25,14 @@ export default function CartPage() {
       setLoading(true);
       const baseURL = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
 
+      // Build line_items for Stripe
       const lineItems = Object.keys(cart).map(key => {
         const item = cart[key];
         const priceId = item.default_price || item.prices[0].id;
         return { price: priceId, quantity: item.quantity };
       });
 
-      console.log("[Checkout] Request body:", { totalItems: lineItems });
+      console.log("[Checkout] Line items:", lineItems);
 
       const res = await fetch(`${baseURL}/api/checkout`, {
         method: "POST",
@@ -40,22 +41,19 @@ export default function CartPage() {
       });
 
       const data = await res.json();
-      console.log("[Checkout] Stripe session:", data);
+      console.log("[Checkout] Response from API:", data);
 
       if (!res.ok || !data.url) {
-        console.error("[Checkout] Failed:", data);
-        alert("Checkout failed. See console for details.");
+        console.error("[Checkout] Failed response:", data);
+        alert("Checkout failed. See console.");
         return;
       }
 
-      console.log("[Checkout Debug] Redirect URL:", data.url);
-
-      // Redirect to Stripe checkout
+      // Redirect to Stripe Checkout
       window.location.href = data.url;
-
     } catch (err) {
       console.error("[Checkout] Error:", err);
-      alert("Checkout failed. See console for details.");
+      alert("Checkout failed. See console.");
     } finally {
       setLoading(false);
     }
