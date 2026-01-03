@@ -29,7 +29,7 @@ export async function POST(request) {
     const requestOrigin = request.headers.get("origin") || "";
     const allowedOrigins = [
       "https://e-commerce-next-js-stripe.vercel.app",
-      "https://your-aws-app.amplifyapp.com",
+      "https://main.dij502211kgtj.amplifyapp.com",
     ];
 
     // If the requestOrigin matches allowedOrigins, use it; else fallback to NEXT_PUBLIC_BASE_URL or first allowed
