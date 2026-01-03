@@ -1,32 +1,39 @@
-# 1️⃣ Build stage
-FROM node:20-alpine AS build
-
+# ==============================
+# Base deps
+# ==============================
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy all source code
+# ==============================
+# Development stage
+# ==============================
+FROM node:20-alpine AS dev
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
 COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
 
-# Build Next.js app for production
+# ==============================
+# Build stage
+# ==============================
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
 RUN npm run build
 
-# 2️⃣ Production stage (serve with Next.js)
-FROM node:20-alpine
-
+# ==============================
+# Production stage
+# ==============================
+FROM node:20-alpine AS prod
 WORKDIR /app
-
-# Install only production dependencies
 COPY package*.json ./
 RUN npm install --production
-
-# Copy built Next.js app
 COPY --from=build /app ./
-
-# Expose port for Next.js
 EXPOSE 3000
-
-# Start Next.js server
 CMD ["npm", "start"]
